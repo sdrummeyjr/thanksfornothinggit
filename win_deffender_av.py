@@ -31,18 +31,23 @@ df = pd.DataFrame({
     'Version': version,
     'Date (UTC)': pd.to_datetime(dates),
     'Date (EST)': pd.to_datetime(dates, utc=True).dt.tz_convert('US/Eastern').dt.tz_localize(None),
-    'Date (CEN)': pd.to_datetime(dates, utc=True).dt.tz_convert('US/Central').dt.tz_localize(None)
-}, columns=["Version", "Date (UTC)", "Date (EST)", "Date (CEN)"])
+    'Date (CEN)': pd.to_datetime(dates, utc=True).dt.tz_convert('US/Central').dt.tz_localize(None),
+    'Reporting Month': pd.to_datetime(dates).dt.strftime("%b %Y")
+}, columns=["Version", "Date (UTC)", "Date (EST)", "Date (CEN)", "Reporting Month"])
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.ExcelWriter.html
 
-df2 = pd.read_excel("try.xlsx")
+# df["Reporting Month"] = df["Date (UTC)"].dt.strftime("%b %Y")
 
-df3 = pd.concat([df2, df]).drop_duplicates(subset="Version")
+# print(df)
+df2 = pd.read_excel("try3.xlsx")
+
+df3 = pd.concat([df2, df]).drop_duplicates()
 df3 = df3.sort_values("Date (UTC)")
+
 print(df3)
 
-with pd.ExcelWriter("try2.xlsx") as writer:
+with pd.ExcelWriter("try3.xlsx") as writer:
     try:
         df3.to_excel(writer, index=False, freeze_panes=(1, 0))
         writer.save()
